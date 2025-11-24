@@ -8,6 +8,11 @@
       "rev": "20ad441",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
+    "harpoon": {
+      "rev": "87b1a35",
+      "src": "https://github.com/ThePrimeagen/harpoon.git",
+      "version": "'harpoon2'"
+    },
     "mini-git": {
       "rev": "8324672",
       "src": "https://github.com/nvim-mini/mini-git"
@@ -15,6 +20,10 @@
     "mini.bufremove": [],
     "mru": [],
     "neo-tree.nvim": [],
+    "neovim": {
+      "rev": "cf2a288",
+      "src": "https://github.com/rose-pine/neovim"
+    },
     "nui.nvim": [],
     "nvim-tmux-navigation": {
       "rev": "4898c98",
