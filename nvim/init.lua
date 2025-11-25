@@ -43,6 +43,8 @@ map("n", "<leader>ec", ":edit $MYVIMRC<CR>:only<CR>", { silent = true, desc = "O
 map("n", "<leader>et", ":edit ~/.tmux.conf<CR>:only<CR>", { silent = true, desc = "Open tmux config as only window" })   
 map("n", "<leader>ez", ":edit ~/.wezterm.lua<CR>:only<CR>", { silent = true, desc = "Open wezterm config as only window" })   
 map('n', '<leader>ew', ':new<CR>:only<CR>', { silent = true; desc = 'open new file as only window'})
+map('n', '<leader>eb', ':edit $HOME/.bashrc<CR>:only<CR>:edit $HOME/.bash_aliases<CR>', { silent = true; desc = 'open .bashrc, .bash_aliases'})
+
 
 map('n', '<leader>gk', 'O<esc>j', { silent = true; desc = 'add new line above cursor'})
 map('n', '<leader>gj', 'o<esc>k', { silent = true; desc = 'add new line below cursor'})
