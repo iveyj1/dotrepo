@@ -20,7 +20,7 @@ vim.opt.signcolumn = "yes"
 vim.opt.undofile = true
 vim.opt.incsearch = true
 vim.opt.undolevels = 10000
-
+vim.opt.scrolloff = 10
 -- Treesitter folds
 vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
