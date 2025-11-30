@@ -75,6 +75,28 @@ map({'n','v','x'}, '<C-d>', '<C-d>zz', { desc = 'Page down centered' })
 map({'n','v','x'}, '<C-u>', '<C-u>zz', { desc = 'Page up centered' })
 map({'n','v','x'}, 'U', function() print("Do not use 'U'") end, { silent = true })
 
+local function pack_hooks(ev)
+    local name, kind = ev.data.spec.name, ev.data.kind
+
+    if name == 'telescope-fzf-native.nvim'
+       and (kind == 'install' or kind == 'update') then
+        -- configure
+        vim.system(
+            { 'cmake', '-S.', '-Bbuild', '-DCMAKE_BUILD_TYPE=Release' },
+            { cwd = ev.data.path }
+        ):wait()
+
+        -- build + install
+        vim.system(
+            { 'cmake', '--build', 'build', '--config', 'Release', '--target', 'install' },
+            { cwd = ev.data.path }
+        ):wait()
+    end
+end
+
+-- IMPORTANT: before vim.pack.add()
+vim.api.nvim_create_autocmd('PackChanged', { callback = pack_hooks })
+
 vim.pack.add({ 
     -- { src = "https://github.com/vague2k/vague.nvim" }, 
     { src = "https://github.com/stevearc/oil.nvim" }, 
@@ -85,17 +107,21 @@ vim.pack.add({
     { src = "https://github.com/nvim-treesitter/nvim-treesitter" }, 
     { src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects" },
     { src = "https://github.com/nvim-lua/plenary.nvim" },
+    { src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim",
+      build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --target install", 
+    },
     { src = "https://github.com/nvim-telescope/telescope.nvim" },
     { src = "https://github.com/MunifTanjim/nui.nvim" },
     { src = "https://github.com/nvim-neo-tree/neo-tree.nvim" },
     { src = "https://github.com/rose-pine/neovim"  },
     { src = "https://github.com/lewis6991/gitsigns.nvim"},
     { src = "https://github.com/alexghergh/nvim-tmux-navigation" },
-    {
-        src = "https://github.com/ThePrimeagen/harpoon.git",
-        version = "harpoon2",      
+    { src = "https://github.com/ThePrimeagen/harpoon.git",
+      version = "harpoon2",      
     },
 })
+
+require('telescope').load_extension('fzf')
 
 require('gitsigns').setup()
 
@@ -160,6 +186,7 @@ map('n', '<leader>fh', builtin.help_tags, { desc = 'Help tags' })
 map('n', '<leader>fm', builtin.oldfiles, { desc = 'Recent files' })
 map('n', '<leader>ft', builtin.treesitter, { desc = 'Treesitter' })
 map('n', '<leader>fk', builtin.keymaps, { desc = 'Keymaps' })
+map('n', '<leader>fw', builtin.grep_string, { desc = 'Find word under cursor' })
 
 -- Telescope Git status and history
 map('n', '<leader>gs', builtin.git_status, { desc = 'Git status' })
@@ -167,21 +194,21 @@ map('n', '<leader>gc', builtin.git_commits, { desc = 'Git commits' })
 map('n', '<leader>gb', builtin.git_branches, { desc = 'Git branches' })
 map('n', '<leader>gB', builtin.git_bcommits, { desc = 'Buffer commits' })
 
-local harpoon = require("harpoon")
--- REQUIRED
-harpoon:setup()
--- REQUIRED
-vim.keymap.set("n", "<leader>ha", function() harpoon:list():add() end)
-vim.keymap.set("n", "<leader>he", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
-
-vim.keymap.set("n", "<C-S-h>", function() harpoon:list():select(1) end)
-vim.keymap.set("n", "<C-S-j>", function() harpoon:list():select(2) end)
-vim.keymap.set("n", "<C-S-r>", function() harpoon:list():select(3) end)
-vim.keymap.set("n", "<C-S-l>", function() harpoon:list():select(4) end)
-
--- Toggle previous & next buffers stored within Harpoon list
-vim.keymap.set("n", "<leader>hk", function() harpoon:list():prev() end)
-vim.keymap.set("n", "<leader>hj", function() harpoon:list():next() end)
+-- local harpoon = require("harpoon")
+-- -- REQUIRED
+-- harpoon:setup()
+-- -- REQUIRED
+-- vim.keymap.set("n", "<leader>ha", function() harpoon:list():add() end)
+-- vim.keymap.set("n", "<leader>he", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+--
+-- vim.keymap.set("n", "<C-S-h>", function() harpoon:list():select(1) end)
+-- vim.keymap.set("n", "<C-S-j>", function() harpoon:list():select(2) end)
+-- vim.keymap.set("n", "<C-S-r>", function() harpoon:list():select(3) end)
+-- vim.keymap.set("n", "<C-S-l>", function() harpoon:list():select(4) end)
+--
+-- -- Toggle previous & next buffers stored within Harpoon list
+-- vim.keymap.set("n", "<leader>hk", function() harpoon:list():prev() end)
+-- vim.keymap.set("n", "<leader>hj", function() harpoon:list():next() end)
 
 -- cd to buffer directory
 vim.keymap.set('n', '<leader>cd', function()
@@ -195,6 +222,14 @@ map('n', '<M-j>', '<cmd>cnext<cr>', {silent = true, desc = "Next quickfix item"}
 map('n', '<M-k>', '<cmd>cprev<cr>', {silent = true, desc = "Previous quickfix item"});
 map('n', '<M-q>', '<cmd>copen<cr>', {silent = true, desc = "Open quickfix"});
 map('n', '<M-c>', '<cmd>cclose<cr>', {silent = true, desc = "Close quickfix"});
+
+-- wrap lines in quickfix lis
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "qf",
+  callback = function()
+    vim.opt_local.wrap = true
+  end
+})
 
 --========================================================
 -- Plugin Configs
