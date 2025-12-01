@@ -1,0 +1,29 @@
+session_name: pfcsw
+
+shell_command_before:
+    - source "$HOME/.local/bin/pyenv/bin/activate"
+
+windows:
+    - window_name: build
+      layout: tiled
+      panes:
+          - shell_command:
+              - cd "$HOME/dev/iq-firmware/products/fc"
+          - shell_command:
+              - cd "$HOME/dev/iq-firmware/products/sw"
+          - shell_command:
+              - cd "$HOME/dev/iq-firmware/products/prov"
+          - shell_command:
+              - cd "$HOME/dev/iq-firmware/products"
+          - shell_command:
+              - cd "$HOME/dev/iq-firmware/products/fc"
+              - python "$HOME/dev/iq-firmware/tools/kit/term.py"
+          - shell_command:
+              - cd "$HOME/dev/iq-firmware/products/sw"
+              - python "$HOME/dev/iq-firmware/tools/kit/term.py"
+          - shell_command:
+              - cd "$HOME/dev/iq-firmware/products/prov"
+              - python "$HOME/dev/iq-firmware/tools/kit/term.py"
+          - shell_command:
+              - cd "$HOME/dev/iq-firmware/products/fc"
+              - python "$HOME/dev/iq-firmware/tools/kit/term.py"

@@ -40,10 +40,10 @@ end
 map('n', '<leader>er', ':MRU<CR>',  { silent = true, desc = 'MRU' })
 map('n', '<leader>eo', ':Oil<CR>',   { silent = true, desc = 'Oil file explorer' })
 map("n", "<leader>ec", ":edit $MYVIMRC<CR>:only<CR>", { silent = true, desc = "Open config as only window" })   
-map("n", "<leader>et", ":edit ~/.tmux.conf<CR>:only<CR>", { silent = true, desc = "Open tmux config as only window" })   
 map("n", "<leader>ez", ":edit ~/.wezterm.lua<CR>:only<CR>", { silent = true, desc = "Open wezterm config as only window" })   
 map('n', '<leader>ew', ':new<CR>:only<CR>', { silent = true; desc = 'open new file as only window'})
 map('n', '<leader>eb', ':edit $HOME/.bashrc<CR>:only<CR>:edit $HOME/.bash_aliases<CR>', { silent = true; desc = 'open .bashrc, .bash_aliases'})
+map('n', '<leader>et', ':edit $HOME/.config/tmuxp/pfcsw.yaml<CR>:edit $HOME/.config/tmux/tmux.conf<CR>:only<CR>', { silent = true; desc = 'open tmux.conf tmuxp'})
 
 
 map('n', '<leader>gk', 'O<esc>j', { silent = true; desc = 'add new line above cursor'})
@@ -213,6 +213,7 @@ vim.keymap.set("n", "<leader>fnw", create_file_in_notes_dir, { desc = "Create fi
 
 map('n', '<leader>ff', builtin.find_files, { desc = 'Find files' })
 map('n', '<leader>fg', builtin.live_grep, { desc = 'Live grep' })
+map('n', '<leader>fs', builtin.grep_string, { desc = 'Grep string' })
 map('n', '<leader>fb', builtin.buffers, { desc = 'List buffers' })
 map('n', '<leader>fh', builtin.help_tags, { desc = 'Help tags' })
 map('n', '<leader>fm', builtin.oldfiles, { desc = 'Recent files' })
