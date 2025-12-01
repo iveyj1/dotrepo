@@ -1,4 +1,4 @@
-session_name: fcsw
+session_name: fw
 
 shell_command_before:
     - source "$HOME/.local/bin/pyenv/bin/activate"
@@ -11,6 +11,10 @@ windows:
               - cd "$HOME/dev/iq-firmware/products/fc"
           - shell_command:
               - cd "$HOME/dev/iq-firmware/products/sw"
+          - shell_command:
+              - cd "$HOME/dev/iq-firmware/products/prov"
+          - shell_command:
+              - cd "$HOME/dev/iq-firmware/products/"
 
     - window_name: term
       layout: tiled
@@ -19,5 +23,21 @@ windows:
               - cd "$HOME/dev/iq-firmware/products/fc"
               - python "$HOME/dev/iq-firmware/tools/kit/term.py"
           - shell_command:
+              - cd "$HOME/dev/iq-firmware/products/fc"
+              - python "$HOME/dev/iq-firmware/tools/kit/term.py"
+          - shell_command:
               - cd "$HOME/dev/iq-firmware/products/sw"
               - python "$HOME/dev/iq-firmware/tools/kit/term.py"
+          - shell_command:
+              - cd "$HOME/dev/iq-firmware/products/prov"
+              - python "$HOME/dev/iq-firmware/tools/kit/term.py"
+
+    - window_name: nvim
+      layout: even-horizontal
+      panes:
+          - shell_command:
+              - cd "$HOME/dev/iq-firmware/products/"
+              - nvim
+          - shell_command:
+              - cd "$HOME/dev/iq-firmware/products/"
+              - lazygit

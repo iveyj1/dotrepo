@@ -121,6 +121,13 @@ vim.pack.add({
     },
 })
 
+require("nvim-treesitter.configs").setup({
+  ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "python" },
+  highlight = { enable = true },
+  indent = { enable = true },
+})   
+
+require('telescope').setup()
 require('telescope').load_extension('fzf')
 
 require('gitsigns').setup()
@@ -178,6 +185,31 @@ end, { desc = 'Find files in sdk directory' })
 map('n', '<leader>fng', function() 
     builtin.live_grep({cwd = '$HOME/ncs/v3.1.1', prompt_title = 'Grep in ncs/v3.1.1'})
 end, { desc = 'Live grep in sdk directory' })
+
+map('n', '<leader>fnf', function()
+    builtin.find_files({ cwd = vim.fn.expand("$HOME/notes") , prompt_title = 'Search in boards/'})
+end, { desc = 'Find files in notes' })
+
+map('n', '<leader>fng', function() 
+    builtin.live_grep({ cwd = vim.fn.expand("$HOME/notes"), prompt_title = 'Grep in notes/'})
+end, { desc = 'Grep in notes' })
+
+local function create_file_in_notes_dir()
+    local notes_dir = vim.fn.expand("$HOME/notes")
+
+    vim.ui.input({ prompt = "Enter filename: " }, function(file_name)
+        if not file_name or file_name == "" then
+            return
+        end
+
+        local full_path = notes_dir .. "/" .. file_name
+        vim.fn.writefile({}, full_path)
+        vim.cmd("edit " .. full_path)
+    end)
+end
+
+-- Map the function to a keybinding, e.g., <leader>f
+vim.keymap.set("n", "<leader>fnw", create_file_in_notes_dir, { desc = "Create file in notes directory" })   
 
 map('n', '<leader>ff', builtin.find_files, { desc = 'Find files' })
 map('n', '<leader>fg', builtin.live_grep, { desc = 'Live grep' })
