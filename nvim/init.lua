@@ -161,6 +161,20 @@ telescope.setup({
     },
 })
 
+map('n', '<leader>ff', builtin.find_files, { desc = 'Find files' })
+map('n', '<leader>fg', builtin.live_grep, { desc = 'Live grep' })
+map('n', '<leader>fs', builtin.grep_string, { desc = 'Grep string' })
+map('n', '<leader>fb', builtin.buffers, { desc = 'List buffers' })
+map('n', '<leader>fh', builtin.help_tags, { desc = 'Help tags' })
+map('n', '<leader>fm', builtin.oldfiles, { desc = 'Recent files' })
+map('n', '<leader>ft', builtin.treesitter, { desc = 'Treesitter' })
+map('n', '<leader>fk', builtin.keymaps, { desc = 'Keymaps' })
+map('n', '<leader>fw', builtin.grep_string, { desc = 'Find word under cursor' })
+map('n', '<leader>gs', builtin.git_status, { desc = 'Git status' })
+map('n', '<leader>gc', builtin.git_commits, { desc = 'Git commits' })
+map('n', '<leader>gb', builtin.git_branches, { desc = 'Git branches' })
+map('n', '<leader>gB', builtin.git_bcommits, { desc = 'Buffer commits' })
+
 -- Project-specific Telescope shortcuts
 map('n', '<leader>fcf', function()
     builtin.find_files({ cwd = 'common', prompt_title = 'Search in common/' })
@@ -208,40 +222,23 @@ local function create_file_in_notes_dir()
     end)
 end
 
--- Map the function to a keybinding, e.g., <leader>f
 vim.keymap.set("n", "<leader>fnw", create_file_in_notes_dir, { desc = "Create file in notes directory" })   
 
-map('n', '<leader>ff', builtin.find_files, { desc = 'Find files' })
-map('n', '<leader>fg', builtin.live_grep, { desc = 'Live grep' })
-map('n', '<leader>fs', builtin.grep_string, { desc = 'Grep string' })
-map('n', '<leader>fb', builtin.buffers, { desc = 'List buffers' })
-map('n', '<leader>fh', builtin.help_tags, { desc = 'Help tags' })
-map('n', '<leader>fm', builtin.oldfiles, { desc = 'Recent files' })
-map('n', '<leader>ft', builtin.treesitter, { desc = 'Treesitter' })
-map('n', '<leader>fk', builtin.keymaps, { desc = 'Keymaps' })
-map('n', '<leader>fw', builtin.grep_string, { desc = 'Find word under cursor' })
+local harpoon = require("harpoon")
+-- REQUIRED
+harpoon:setup()
+-- REQUIRED
+vim.keymap.set("n", "<leader>ha", function() harpoon:list():add() end, { desc = "harpoon add"})
+vim.keymap.set("n", "<leader>he", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end, { desc = "harpoon toggle quick menu"})
 
--- Telescope Git status and history
-map('n', '<leader>gs', builtin.git_status, { desc = 'Git status' })
-map('n', '<leader>gc', builtin.git_commits, { desc = 'Git commits' })
-map('n', '<leader>gb', builtin.git_branches, { desc = 'Git branches' })
-map('n', '<leader>gB', builtin.git_bcommits, { desc = 'Buffer commits' })
+vim.keymap.set("n", "<C-S-h>", function() harpoon:list():select(1) end)
+vim.keymap.set("n", "<C-S-j>", function() harpoon:list():select(2) end)
+vim.keymap.set("n", "<C-S-k>", function() harpoon:list():select(3) end)
+vim.keymap.set("n", "<C-S-l>", function() harpoon:list():select(4) end)
 
--- local harpoon = require("harpoon")
--- -- REQUIRED
--- harpoon:setup()
--- -- REQUIRED
--- vim.keymap.set("n", "<leader>ha", function() harpoon:list():add() end)
--- vim.keymap.set("n", "<leader>he", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
---
--- vim.keymap.set("n", "<C-S-h>", function() harpoon:list():select(1) end)
--- vim.keymap.set("n", "<C-S-j>", function() harpoon:list():select(2) end)
--- vim.keymap.set("n", "<C-S-r>", function() harpoon:list():select(3) end)
--- vim.keymap.set("n", "<C-S-l>", function() harpoon:list():select(4) end)
---
--- -- Toggle previous & next buffers stored within Harpoon list
--- vim.keymap.set("n", "<leader>hk", function() harpoon:list():prev() end)
--- vim.keymap.set("n", "<leader>hj", function() harpoon:list():next() end)
+-- Toggle previous & next buffers stored within Harpoon list
+vim.keymap.set("n", "<leader>hk", function() harpoon:list():prev() end)
+vim.keymap.set("n", "<leader>hj", function() harpoon:list():next() end)
 
 -- cd to buffer directory
 vim.keymap.set('n', '<leader>cd', function()
