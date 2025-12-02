@@ -21,16 +21,16 @@ windows:
       panes:
           - shell_command:
               - cd "$HOME/dev/iq-firmware/products/fc"
-              - python "$HOME/dev/iq-firmware/tools/kit/term.py"
+              - python "$HOME/dev/iq-firmware/tools/kit/term.py" --id 9186
           - shell_command:
               - cd "$HOME/dev/iq-firmware/products/fc"
-              - python "$HOME/dev/iq-firmware/tools/kit/term.py"
+              - python "$HOME/dev/iq-firmware/tools/kit/term.py" --id 1732
           - shell_command:
               - cd "$HOME/dev/iq-firmware/products/sw"
-              - python "$HOME/dev/iq-firmware/tools/kit/term.py"
+              - python "$HOME/dev/iq-firmware/tools/kit/term.py" --id b791
           - shell_command:
               - cd "$HOME/dev/iq-firmware/products/prov"
-              - python "$HOME/dev/iq-firmware/tools/kit/term.py"
+              - python "$HOME/dev/iq-firmware/tools/kit/term.py" --id 9743
 
     - window_name: nvim
       layout: even-horizontal
