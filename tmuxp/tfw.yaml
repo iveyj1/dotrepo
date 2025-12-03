@@ -14,7 +14,7 @@ windows:
           - shell_command:
               - cd "$HOME/dev/iq-firmware/products/prov"
           - shell_command:
-              - cd "$HOME/dev/iq-firmware/products/"
+              - cd "$HOME/dev/iq-firmware/products"
 
     - window_name: term
       layout: tiled
