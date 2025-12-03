@@ -1,0 +1,12 @@
+alias l="ls -lFG --group-directories-first"
+alias ll="ls -laFG --group-directories-first"
+alias lt='ls -ltrFG --group-directories-first'
+alias vim="nvim"
+alias ovim="/usr/bin/vim"
+alias rgfind="rg"
+alias cdf="cd $HOME/dev/iq-firmware/products"
+alias cdt="cd $HOME/user/dev/iq-firmware/tools"
+alias cdc="cd $HOME/.config"
+# alias nvw='xterm -hold -e bash -i -c "cd \"$PWD\"; nvim; exec bash"'
+alias nvw='xterm -e bash -i -c "cd \"$PWD\"; nvim \"$@\"; exec bash"'
+alias path="echo $PATH | tr ':' '\n'"

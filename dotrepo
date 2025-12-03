@@ -1,0 +1,183 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOTCONFIG="$HOME/.config"
+DOTREPO="$DOTCONFIG/dotrepo"
+
+usage() {
+    cat <<EOF
+Usage:
+  dotrepo add <name>       # track ~/.config/<name> or \$HOME/.<name> (for home/...)
+  dotrepo setup            # link all files/dirs from dotrepo into ~/.config and \$HOME
+
+Notes:
+  - <name> is relative:
+      * 'nvim'              -> ~/.config/nvim
+      * 'wezterm/wezterm.lua' -> ~/.config/wezterm/wezterm.lua
+      * 'home/bashrc'       -> \$HOME/.bashrc
+      * 'home/nvim'         -> \$HOME/.nvim
+EOF
+}
+
+ensure_dotrepo() {
+    mkdir -p "$DOTREPO"
+}
+
+add_paths_for_name() {
+    # Args: <rel>; prints: src<TAB>dest
+    local rel="$1"
+    local src dest
+
+    case "$rel" in
+        home/*)
+            # home/bashrc       -> $HOME/.bashrc
+            # home/nvim         -> $HOME/.nvim
+            # home/nvim/init.vim -> $HOME/.nvim/init.vim
+            local inner="${rel#home/}"
+            local first="${inner%%/*}"
+            local rest="${inner#"$first"}"      # maybe "" or "/sub/path"
+            local rest_no_slash="${rest#/}"     # strip leading "/" if present
+
+            src="$HOME/.$first"
+            if [ -n "$rest_no_slash" ]; then
+                src="$src/$rest_no_slash"
+            fi
+
+            dest="$DOTREPO/home/$inner"
+            ;;
+        *)
+            src="$DOTCONFIG/$rel"
+            dest="$DOTREPO/$rel"
+            ;;
+    esac
+
+    printf '%s\t%s\n' "$src" "$dest"
+}
+
+cmd_add() {
+    if [ $# -ne 1 ]; then
+        echo "dotrepo add: needs a single <name> argument" >&2
+        exit 1
+    fi
+
+    local rel="$1"
+    local src dest
+    IFS=$'\t' read -r src dest < <(add_paths_for_name "$rel")
+
+    if [ ! -e "$src" ] && [ ! -L "$src" ]; then
+        echo "dotrepo add: $src does not exist" >&2
+        exit 1
+    fi
+
+    if [ -L "$src" ]; then
+        echo "dotrepo add: $src is already a symlink, refusing" >&2
+        exit 1
+    fi
+
+    if [ -e "$dest" ] || [ -L "$dest" ]; then
+        echo "dotrepo add: destination $dest already exists" >&2
+        exit 1
+    fi
+
+    ensure_dotrepo
+    mkdir -p "$(dirname "$dest")"
+
+    echo "Copying $src -> $dest"
+    cp -a "$src" "$dest"
+
+    echo "Replacing $src with symlink -> $dest"
+    rm -rf "$src"
+    ln -s "$dest" "$src"
+}
+
+cmd_setup() {
+    ensure_dotrepo
+
+    if [ ! -d "$DOTREPO" ]; then
+        echo "dotrepo setup: $DOTREPO does not exist" >&2
+        exit 1
+    fi
+
+    # 1) ~/.config entries: top-level children of $DOTREPO except .git and home
+    while IFS= read -r path; do
+        local rel="${path#$DOTREPO/}"
+        local src="$path"
+        local dest="$DOTCONFIG/$rel"
+        local backup="${dest}.orig"
+
+        mkdir -p "$(dirname "$dest")"
+
+        if [ -e "$dest" ] || [ -L "$dest" ]; then
+            if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
+                continue
+            fi
+
+            if [ -e "$backup" ] || [ -L "$backup" ]; then
+                echo "dotrepo setup: backup $backup already exists, skipping $dest" >&2
+                continue
+            fi
+
+            echo "Moving existing $dest -> $backup"
+            mv "$dest" "$backup"
+        fi
+
+        echo "Linking $dest -> $src"
+        ln -s "$src" "$dest"
+    done < <(find "$DOTREPO" -mindepth 1 -maxdepth 1 \
+                 ! -name '.git' ! -name 'home')
+
+    # 2) $HOME dotfiles: children of $DOTREPO/home
+    local HOMEREPO="$DOTREPO/home"
+    if [ -d "$HOMEREPO" ]; then
+        while IFS= read -r path; do
+            local rel="${path#$HOMEREPO/}"   # e.g. bashrc, nvim
+            local src="$path"
+            local dest="$HOME/.$rel"
+            local backup="${dest}.orig"
+
+            mkdir -p "$(dirname "$dest")"
+
+            if [ -e "$dest" ] || [ -L "$dest" ]; then
+                if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
+                    continue
+                fi
+
+                if [ -e "$backup" ] || [ -L "$backup" ]; then
+                    echo "dotrepo setup: backup $backup already exists, skipping $dest" >&2
+                    continue
+                fi
+
+                echo "Moving existing $dest -> $backup"
+                mv "$dest" "$backup"
+            fi
+
+            echo "Linking $dest -> $src"
+            ln -s "$src" "$dest"
+        done < <(find "$HOMEREPO" -mindepth 1 -maxdepth 1)
+    fi
+}
+
+main() {
+    local cmd="${1-}"
+
+    case "$cmd" in
+        add|track)
+            shift
+            cmd_add "$@"
+            ;;
+        setup|install)
+            shift
+            cmd_setup "$@"
+            ;;
+        -h|--help|"")
+            usage
+            ;;
+        *)
+            echo "Unknown command: $cmd" >&2
+            usage
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"
