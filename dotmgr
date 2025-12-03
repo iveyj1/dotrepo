@@ -3,19 +3,20 @@ set -euo pipefail
 
 DOTCONFIG="$HOME/.config"
 DOTREPO="$DOTCONFIG/dotrepo"
+SCRIPT_BASENAME="$(basename "$0")"
 
 usage() {
     cat <<EOF
 Usage:
-  dotrepo add <name>       # track ~/.config/<name> or \$HOME/.<name> (for home/...)
-  dotrepo setup            # link all files/dirs from dotrepo into ~/.config and \$HOME
+  $SCRIPT_BASENAME add <name>       # track ~/.config/<name> or \$HOME/.<name> (for home/...)
+  $SCRIPT_BASENAME install          # link all files/dirs from dotrepo into ~/.config and \$HOME
 
 Notes:
   - <name> is relative:
-      * 'nvim'              -> ~/.config/nvim
-      * 'wezterm/wezterm.lua' -> ~/.config/wezterm/wezterm.lua
-      * 'home/bashrc'       -> \$HOME/.bashrc
-      * 'home/nvim'         -> \$HOME/.nvim
+      * 'nvim'                 -> ~/.config/nvim
+      * 'wezterm/wezterm.lua'  -> ~/.config/wezterm/wezterm.lua
+      * 'home/bashrc'          -> \$HOME/.bashrc
+      * 'home/nvim'            -> \$HOME/.nvim
 EOF
 }
 
@@ -30,13 +31,13 @@ add_paths_for_name() {
 
     case "$rel" in
         home/*)
-            # home/bashrc       -> $HOME/.bashrc
-            # home/nvim         -> $HOME/.nvim
-            # home/nvim/init.vim -> $HOME/.nvim/init.vim
+            # home/bashrc         -> $HOME/.bashrc
+            # home/nvim           -> $HOME/.nvim
+            # home/nvim/init.vim  -> $HOME/.nvim/init.vim
             local inner="${rel#home/}"
             local first="${inner%%/*}"
-            local rest="${inner#"$first"}"      # maybe "" or "/sub/path"
-            local rest_no_slash="${rest#/}"     # strip leading "/" if present
+            local rest="${inner#"$first"}"       # "" or "/sub/path"
+            local rest_no_slash="${rest#/}"      # strip leading "/"
 
             src="$HOME/.$first"
             if [ -n "$rest_no_slash" ]; then
@@ -56,7 +57,7 @@ add_paths_for_name() {
 
 cmd_add() {
     if [ $# -ne 1 ]; then
-        echo "dotrepo add: needs a single <name> argument" >&2
+        echo "$SCRIPT_BASENAME add: needs a single <name> argument" >&2
         exit 1
     fi
 
@@ -65,17 +66,17 @@ cmd_add() {
     IFS=$'\t' read -r src dest < <(add_paths_for_name "$rel")
 
     if [ ! -e "$src" ] && [ ! -L "$src" ]; then
-        echo "dotrepo add: $src does not exist" >&2
+        echo "$SCRIPT_BASENAME add: $src does not exist" >&2
         exit 1
     fi
 
     if [ -L "$src" ]; then
-        echo "dotrepo add: $src is already a symlink, refusing" >&2
+        echo "$SCRIPT_BASENAME add: $src is already a symlink, refusing" >&2
         exit 1
     fi
 
     if [ -e "$dest" ] || [ -L "$dest" ]; then
-        echo "dotrepo add: destination $dest already exists" >&2
+        echo "$SCRIPT_BASENAME add: destination $dest already exists" >&2
         exit 1
     fi
 
@@ -90,30 +91,54 @@ cmd_add() {
     ln -s "$dest" "$src"
 }
 
-cmd_setup() {
+cmd_install() {
     ensure_dotrepo
 
     if [ ! -d "$DOTREPO" ]; then
-        echo "dotrepo setup: $DOTREPO does not exist" >&2
+        echo "$SCRIPT_BASENAME install: $DOTREPO does not exist" >&2
         exit 1
     fi
 
-    # 1) ~/.config entries: top-level children of $DOTREPO except .git and home
+    #
+    # 1) ~/.config entries: top-level children of $DOTREPO except:
+    #    - .git
+    #    - home
+    #    - the script itself (to avoid looping ~/.config/dotrepo)
+    #
     while IFS= read -r path; do
         local rel="${path#$DOTREPO/}"
+
+        case "$rel" in
+            .git|home)
+                continue
+                ;;
+        esac
+
+        # Skip the script file itself if it lives in the repo root
+        if [ "$rel" = "$SCRIPT_BASENAME" ]; then
+            continue
+        fi
+
         local src="$path"
         local dest="$DOTCONFIG/$rel"
+
+        # Never try to replace ~/.config/dotrepo itself
+        if [ "$dest" = "$DOTREPO" ]; then
+            continue
+        fi
+
         local backup="${dest}.orig"
 
         mkdir -p "$(dirname "$dest")"
 
         if [ -e "$dest" ] || [ -L "$dest" ]; then
+            # Already the correct symlink? then skip.
             if [ -L "$dest" ] && [ "$(readlink "$dest")" = "$src" ]; then
                 continue
             fi
 
             if [ -e "$backup" ] || [ -L "$backup" ]; then
-                echo "dotrepo setup: backup $backup already exists, skipping $dest" >&2
+                echo "$SCRIPT_BASENAME install: backup $backup already exists, skipping $dest" >&2
                 continue
             fi
 
@@ -126,7 +151,9 @@ cmd_setup() {
     done < <(find "$DOTREPO" -mindepth 1 -maxdepth 1 \
                  ! -name '.git' ! -name 'home')
 
+    #
     # 2) $HOME dotfiles: children of $DOTREPO/home
+    #
     local HOMEREPO="$DOTREPO/home"
     if [ -d "$HOMEREPO" ]; then
         while IFS= read -r path; do
@@ -143,7 +170,7 @@ cmd_setup() {
                 fi
 
                 if [ -e "$backup" ] || [ -L "$backup" ]; then
-                    echo "dotrepo setup: backup $backup already exists, skipping $dest" >&2
+                    echo "$SCRIPT_BASENAME install: backup $backup already exists, skipping $dest" >&2
                     continue
                 fi
 
@@ -165,9 +192,9 @@ main() {
             shift
             cmd_add "$@"
             ;;
-        setup|install)
+        install|setup)
             shift
-            cmd_setup "$@"
+            cmd_install "$@"
             ;;
         -h|--help|"")
             usage
