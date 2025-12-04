@@ -41,13 +41,13 @@ map('n', '<leader>er', ':MRU<CR>',  { silent = true, desc = 'MRU' })
 map('n', '<leader>eo', ':Oil<CR>',   { silent = true, desc = 'Oil file explorer' })
 map("n", "<leader>ec", ":edit $MYVIMRC<CR>:only<CR>", { silent = true, desc = "Open config as only window" })   
 map("n", "<leader>ez", ":edit ~/.wezterm.lua<CR>:only<CR>", { silent = true, desc = "Open wezterm config as only window" })   
-map('n', '<leader>ew', ':new<CR>:only<CR>', { silent = true; desc = 'open new file as only window'})
-map('n', '<leader>eb', ':edit $HOME/.bashrc<CR>:only<CR>:edit $HOME/.bash_aliases<CR>', { silent = true; desc = 'open .bashrc, .bash_aliases'})
-map('n', '<leader>et', ':edit $HOME/.config/tmuxp/fcsw.yaml<CR>:edit $HOME/.config/tmux/tmux.conf<CR>:only<CR>', { silent = true; desc = 'open tmux.conf tmuxp'})
+map('n', '<leader>ew', ':new<CR>:only<CR>', { silent = true, desc = 'open new file as only window'})
+map('n', '<leader>eb', ':edit $HOME/.bashrc<CR>:only<CR>:edit $HOME/.bash_aliases<CR>', { silent = true, desc = 'open .bashrc, .bash_aliases'})
+map('n', '<leader>et', ':edit $HOME/.config/tmuxp/fcsw.yaml<CR>:edit $HOME/.config/tmux/tmux.conf<CR>:only<CR>', { silent = true, desc = 'open tmux.conf tmuxp'})
 
 
-map('n', '<leader>gk', 'O<esc>j', { silent = true; desc = 'add new line above cursor'})
-map('n', '<leader>gj', 'o<esc>k', { silent = true; desc = 'add new line below cursor'})
+map('n', '<leader>gk', 'O<esc>j', { silent = true, desc = 'add new line above cursor'})
+map('n', '<leader>gj', 'o<esc>k', { silent = true, desc = 'add new line below cursor'})
 
 map('n', '<leader>mk', ':make ', { desc = 'run make command, wait for arguments'})
 
@@ -121,11 +121,8 @@ vim.pack.add({
     },
 })
 
-require("nvim-treesitter.configs").setup({
-  ensure_installed = { "c", "lua", "vim", "vimdoc", "query", "python" },
-  highlight = { enable = true },
-  indent = { enable = true },
-})   
+-- Treesitter config is in lua/plugins/treesitter.lua
+require('plugins.treesitter')
 
 require('telescope').setup()
 require('telescope').load_extension('fzf')
@@ -192,13 +189,13 @@ map('n', '<leader>frg', function()
     builtin.live_grep({ cwd = '../boards/arm', prompt_title = 'Grep in boards/'})
 end, { desc = 'Live grep ../boards/arm' })
 
-map('n', '<leader>fnf', function()
-    builtin.find_files({ cwd = '$HOME/ncs/v3.1.1', prompt_title = 'Search in ncs/v3.1.1' })
-end, { desc = 'Find files in sdk directory' })
+map('n', '<leader>fsf', function()
+    builtin.find_files({ cwd = vim.fn.expand('$HOME/ncs/v3.1.1'), prompt_title = 'Search in ncs/v3.1.1' })
+end, { desc = 'Find files in SDK (ncs)' })
 
-map('n', '<leader>fng', function() 
-    builtin.live_grep({cwd = '$HOME/ncs/v3.1.1', prompt_title = 'Grep in ncs/v3.1.1'})
-end, { desc = 'Live grep in sdk directory' })
+map('n', '<leader>fsg', function() 
+    builtin.live_grep({cwd = vim.fn.expand('$HOME/ncs/v3.1.1'), prompt_title = 'Grep in ncs/v3.1.1'})
+end, { desc = 'Live grep in SDK (ncs)' })
 
 map('n', '<leader>fnf', function()
     builtin.find_files({ cwd = vim.fn.expand("$HOME/notes") , prompt_title = 'Search in boards/'})

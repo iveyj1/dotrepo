@@ -1,6 +1,8 @@
 
 -- devroots: upward file-based multi-root search for fzf-lua
 -- Requirements: fzf-lua, fd, ripgrep; Neovim 0.9+ (vim.fs)
+-- NOTE: This plugin requires fzf-lua which is not currently installed.
+-- Consider installing fzf-lua or adapting this to work with telescope.
 
 local M = {}
 
@@ -82,17 +84,19 @@ local function rg_cmd(roots, extra_args)
 end
 
 -- :DevFiles [fd-extra-args]
-vim.api.nvim_create_user_command("DevFiles", function(opts)
-    local roots = read_roots()
-    if #roots == 0 then return end
-    require("fzf-lua").files({ cmd = fd_cmd(roots, opts.args) })
-end, { nargs = "*", desc = "fzf-lua files over .dev.roots dirs" })
+-- DISABLED: Uncomment when fzf-lua is installed
+-- vim.api.nvim_create_user_command("DevFiles", function(opts)
+--     local roots = read_roots()
+--     if #roots == 0 then return end
+--     require("fzf-lua").files({ cmd = fd_cmd(roots, opts.args) })
+-- end, { nargs = "*", desc = "fzf-lua files over .dev.roots dirs" })
 
 -- :DevGrep {ripgrep-pattern-and-args}
-vim.api.nvim_create_user_command("DevGrep", function(opts)
-    local roots = read_roots()
-    if #roots == 0 then return end
-    require("fzf-lua").grep({ cmd = rg_cmd(roots, opts.args) })
-end, { nargs = "*", desc = "fzf-lua grep over .dev.roots dirs" })
+-- DISABLED: Uncomment when fzf-lua is installed
+-- vim.api.nvim_create_user_command("DevGrep", function(opts)
+--     local roots = read_roots()
+--     if #roots == 0 then return end
+--     require("fzf-lua").grep({ cmd = rg_cmd(roots, opts.args) })
+-- end, { nargs = "*", desc = "fzf-lua grep over .dev.roots dirs" })
 
 return M
