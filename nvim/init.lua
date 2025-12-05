@@ -45,7 +45,6 @@ map('n', '<leader>ew', ':new<CR>:only<CR>', { silent = true, desc = 'open new fi
 map('n', '<leader>eb', ':edit $HOME/.bashrc<CR>:only<CR>:edit $HOME/.bash_aliases<CR>', { silent = true, desc = 'open .bashrc, .bash_aliases'})
 map('n', '<leader>et', ':edit $HOME/.config/tmuxp/fcsw.yaml<CR>:edit $HOME/.config/tmux/tmux.conf<CR>:only<CR>', { silent = true, desc = 'open tmux.conf tmuxp'})
 
-
 map('n', '<leader>gk', 'O<esc>j', { silent = true, desc = 'add new line above cursor'})
 map('n', '<leader>gj', 'o<esc>k', { silent = true, desc = 'add new line below cursor'})
 
@@ -100,19 +99,18 @@ vim.api.nvim_create_autocmd('PackChanged', { callback = pack_hooks })
 vim.pack.add({ 
     -- { src = "https://github.com/vague2k/vague.nvim" }, 
     { src = "https://github.com/stevearc/oil.nvim" }, 
-    { src = "https://github.com/nvim-mini/mini.bufremove" }, 
-    { src = "https://github.com/yegappan/mru" }, 
+    -- { src = "https://github.com/nvim-mini/mini.bufremove" }, 
+    -- { src = "https://github.com/yegappan/mru" }, 
     { src = "https://github.com/folke/which-key.nvim" },
-    { src = "https://github.com/nvim-tree/nvim-web-devicons" },
+    -- { src = "https://github.com/nvim-tree/nvim-web-devicons" },
     { src = "https://github.com/nvim-treesitter/nvim-treesitter" }, 
     { src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects" },
     { src = "https://github.com/nvim-lua/plenary.nvim" },
-    { src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim",
-      build = "cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release --target install", 
-    },
+    { src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim" },
     { src = "https://github.com/nvim-telescope/telescope.nvim" },
-    { src = "https://github.com/MunifTanjim/nui.nvim" },
-    { src = "https://github.com/nvim-neo-tree/neo-tree.nvim" },
+    { src = "https://github.com/nvim-telescope/telescope-file-browser.nvim" },
+    -- { src = "https://github.com/MunifTanjim/nui.nvim" },
+    -- { src = "https://github.com/nvim-neo-tree/neo-tree.nvim" },
     { src = "https://github.com/rose-pine/neovim"  },
     { src = "https://github.com/lewis6991/gitsigns.nvim"},
     { src = "https://github.com/alexghergh/nvim-tmux-navigation" },
@@ -126,6 +124,7 @@ require('plugins.treesitter')
 
 require('telescope').setup()
 require('telescope').load_extension('fzf')
+require("telescope").load_extension "file_browser"
 
 require('gitsigns').setup()
 
@@ -161,7 +160,7 @@ telescope.setup({
 map('n', '<leader>ff', builtin.find_files, { desc = 'Find files' })
 map('n', '<leader>fg', builtin.live_grep, { desc = 'Live grep' })
 map('n', '<leader>fs', builtin.grep_string, { desc = 'Grep string' })
-map('n', '<leader>fb', builtin.buffers, { desc = 'List buffers' })
+-- map('n', '<leader>fb', builtin.buffers, { desc = 'List buffers' })
 map('n', '<leader>fh', builtin.help_tags, { desc = 'Help tags' })
 map('n', '<leader>fm', builtin.oldfiles, { desc = 'Recent files' })
 map('n', '<leader>ft', builtin.treesitter, { desc = 'Treesitter' })
@@ -221,6 +220,10 @@ end
 
 vim.keymap.set("n", "<leader>fnw", create_file_in_notes_dir, { desc = "Create file in notes directory" })   
 
+vim.keymap.set("n", "<space>fbc", ":Telescope file_browser<CR>")
+-- open file_browser with the path of the current buffer
+vim.keymap.set("n", "<space>fbb", ":Telescope file_browser path=%:p:h select_buffer=true<CR>")
+
 local harpoon = require("harpoon")
 -- REQUIRED
 harpoon:setup()
@@ -263,10 +266,10 @@ vim.api.nvim_create_autocmd("FileType", {
 --========================================================
 require('oil').setup({ default_file_explorer = false })
 require('which-key').setup({ delay = 250, show_help = true })
-require('mini.bufremove').setup()
+-- require('mini.bufremove').setup()
 
 -- Map 'k' to delete the current buffer using mini.bufremove
-vim.keymap.set('n', '<leader>bd', ':lua require("mini.bufremove").delete(0, false)<CR>', { desc = 'Delete current buffer' })   
+-- vim.keymap.set('n', '<leader>bd', ':lua require("mini.bufremove").delete(0, false)<CR>', { desc = 'Delete current buffer' })   
 
 --========================================================
 -- UI & Misc
@@ -289,6 +292,7 @@ vim.api.nvim_set_hl(0, "NormalNC", { bg = "#282828" }) -- Example dark gray back
 
 vim.cmd("hi StatusLine guibg=none")
 
+-- flash highlight when yanking
 vim.api.nvim_create_autocmd('TextYankPost', {
     group = vim.api.nvim_create_augroup('highlight_yank', { clear = true }),
     desc = 'Highlight on yank',
@@ -297,6 +301,8 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     end,
 })
 
+-- when creating new file or new help window, make the new pane 
+-- the only one in the window
 vim.api.nvim_create_autocmd("FileType", {
     pattern = { "help", "new" },
     callback = function()

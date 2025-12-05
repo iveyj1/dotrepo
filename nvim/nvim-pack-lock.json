@@ -65,6 +65,10 @@
       "rev": "72a04c4",
       "src": "https://github.com/rose-pine/neovim"
     },
+    "telescope-file-browser.nvim": {
+      "rev": "3610dc7",
+      "src": "https://github.com/nvim-telescope/telescope-file-browser.nvim"
+    },
     "telescope-fzf-native.nvim": {
       "rev": "6fea601",
       "src": "https://github.com/nvim-telescope/telescope-fzf-native.nvim"
