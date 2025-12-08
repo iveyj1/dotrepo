@@ -25,9 +25,16 @@ vim.opt.scrolloff = 10
 vim.opt.foldmethod = "expr"
 vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.opt.foldenable = false
-
+vim.o.winborder = "rounded"
 vim.opt.makeprg = [[./b $*]]
-
+vim.opt.wildignore = {
+  '**/build*/**',
+  '**/dist/**',
+  '**/.git/**',
+  '*.o',
+  '*.a',
+  '*.pyc',
+}
 --========================================================
 -- Keymaps
 --========================================================
@@ -56,6 +63,8 @@ map('n', '<leader>k', ':bd<CR>',     { silent = true, desc = 'Close buffer' })
 -- map('n', '<leader>w', ':w<CR>', { silent = true, desc = 'Write buffer' })
 map('n', '<leader>q', ':quit<CR>',  { silent = true, desc = 'Quit' })
 map('n', '<leader>n', ':bn<CR>',  { silent = true, desc = 'next buffer' })
+
+map('n', '<leader>gw', 'Plde',  { silent = true, desc = 'paste to end of current word' })
 
 map('n', 'go', ':put _<CR>', {silent = true, desc = 'open new line below cursor'})
 map('n', 'gO', ':put! _<CR>', {silent = true, desc = 'open new line above cursor'})
@@ -102,21 +111,39 @@ vim.pack.add({
     -- { src = "https://github.com/nvim-mini/mini.bufremove" }, 
     -- { src = "https://github.com/yegappan/mru" }, 
     { src = "https://github.com/folke/which-key.nvim" },
-    -- { src = "https://github.com/nvim-tree/nvim-web-devicons" },
+    { src = "https://github.com/nvim-tree/nvim-web-devicons" },
     { src = "https://github.com/nvim-treesitter/nvim-treesitter" }, 
     { src = "https://github.com/nvim-treesitter/nvim-treesitter-textobjects" },
     { src = "https://github.com/nvim-lua/plenary.nvim" },
     { src = "https://github.com/nvim-telescope/telescope-fzf-native.nvim" },
     { src = "https://github.com/nvim-telescope/telescope.nvim" },
     { src = "https://github.com/nvim-telescope/telescope-file-browser.nvim" },
-    -- { src = "https://github.com/MunifTanjim/nui.nvim" },
-    -- { src = "https://github.com/nvim-neo-tree/neo-tree.nvim" },
+    { src = "https://github.com/MunifTanjim/nui.nvim" },
+    { src = "https://github.com/nvim-neo-tree/neo-tree.nvim" },
     { src = "https://github.com/rose-pine/neovim"  },
     { src = "https://github.com/lewis6991/gitsigns.nvim"},
     { src = "https://github.com/alexghergh/nvim-tmux-navigation" },
     { src = "https://github.com/ThePrimeagen/harpoon.git",
       version = "harpoon2",      
     },
+    { src = "https://github.com/nvim-pack/nvim-spectre" },
+
+})
+require('neo-tree').setup()
+
+require('spectre').setup()
+
+vim.keymap.set('n', '<leader>S', '<cmd>lua require("spectre").toggle()<CR>', {
+    desc = "Toggle Spectre"
+})
+vim.keymap.set('n', '<leader>sw', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', {
+    desc = "Search current word"
+})
+vim.keymap.set('v', '<leader>sw', '<esc><cmd>lua require("spectre").open_visual()<CR>', {
+    desc = "Search current word"
+})
+vim.keymap.set('n', '<leader>sp', '<cmd>lua require("spectre").open_file_search({select_word=true})<CR>', {
+    desc = "Search on current file"
 })
 
 -- Treesitter config is in lua/plugins/treesitter.lua
@@ -160,7 +187,7 @@ telescope.setup({
 map('n', '<leader>ff', builtin.find_files, { desc = 'Find files' })
 map('n', '<leader>fg', builtin.live_grep, { desc = 'Live grep' })
 map('n', '<leader>fs', builtin.grep_string, { desc = 'Grep string' })
--- map('n', '<leader>fb', builtin.buffers, { desc = 'List buffers' })
+map('n', '<leader>fl', builtin.buffers, { desc = 'List buffers' })
 map('n', '<leader>fh', builtin.help_tags, { desc = 'Help tags' })
 map('n', '<leader>fm', builtin.oldfiles, { desc = 'Recent files' })
 map('n', '<leader>ft', builtin.treesitter, { desc = 'Treesitter' })
@@ -219,8 +246,8 @@ local function create_file_in_notes_dir()
 end
 
 vim.keymap.set("n", "<leader>fnw", create_file_in_notes_dir, { desc = "Create file in notes directory" })   
-
 vim.keymap.set("n", "<space>fbc", ":Telescope file_browser<CR>")
+
 -- open file_browser with the path of the current buffer
 vim.keymap.set("n", "<space>fbb", ":Telescope file_browser path=%:p:h select_buffer=true<CR>")
 
