@@ -44,7 +44,7 @@ local function toggle_relativenumber()
     vim.opt.relativenumber = not vim.opt.relativenumber:get()
 end
 
-map('n', '<leader>er', ':MRU<CR>',  { silent = true, desc = 'MRU' })
+-- map('n', '<leader>er', ':MRU<CR>',  { silent = true, desc = 'MRU' })
 map('n', '<leader>eo', ':Oil<CR>',   { silent = true, desc = 'Oil file explorer' })
 map("n", "<leader>ec", ":edit $MYVIMRC<CR>:only<CR>", { silent = true, desc = "Open config as only window" })   
 map("n", "<leader>ez", ":edit ~/.wezterm.lua<CR>:only<CR>", { silent = true, desc = "Open wezterm config as only window" })   
@@ -215,11 +215,11 @@ map('n', '<leader>frg', function()
     builtin.live_grep({ cwd = '../boards/arm', prompt_title = 'Grep in boards/'})
 end, { desc = 'Live grep ../boards/arm' })
 
-map('n', '<leader>fsf', function()
+map('n', '<leader>frf', function()
     builtin.find_files({ cwd = vim.fn.expand('$HOME/ncs/v3.1.1'), prompt_title = 'Search in ncs/v3.1.1' })
 end, { desc = 'Find files in SDK (ncs)' })
 
-map('n', '<leader>fsg', function() 
+map('n', '<leader>frg', function() 
     builtin.live_grep({cwd = vim.fn.expand('$HOME/ncs/v3.1.1'), prompt_title = 'Grep in ncs/v3.1.1'})
 end, { desc = 'Live grep in SDK (ncs)' })
 
