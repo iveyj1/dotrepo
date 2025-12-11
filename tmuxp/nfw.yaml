@@ -21,10 +21,10 @@ windows:
       panes:
           - shell_command:
               - cd "$HOME/dev/iq-firmware/products/fc"
-              - python "$HOME/dev/iq-firmware/tools/kit/term.py" -- id 5629
+              - python "$HOME/dev/iq-firmware/tools/kit/term.py" --id 5629
           - shell_command:
               - cd "$HOME/dev/iq-firmware/products/sw"
-              - python "$HOME/dev/iq-firmware/tools/kit/term.py" --id 4727
+              - python "$HOME/dev/iq-firmware/tools/kit/term.py" --id b791
           - shell_command:
               - cd "$HOME/dev/iq-firmware/products/prov"
               - python "$HOME/dev/iq-firmware/tools/kit/term.py" --id 3955
