@@ -27,6 +27,8 @@ vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
 vim.opt.foldenable = false
 vim.o.winborder = "rounded"
 vim.opt.makeprg = [[./b $*]]
+vim.opt.pumblend = 0
+vim.opt.winblend = 0
 vim.opt.wildignore = {
   '**/build*/**',
   '**/dist/**',
@@ -77,6 +79,7 @@ map({'n','v','x'}, '<leader>Y', '"+y$', { desc = 'Yank to end of line to system 
 map({'n','v','x'}, '<leader>d', '"+d', { desc = 'Delete to system clipboard' })
 map({'n','v','x'}, '<leader>D', '"+D', { desc = 'Delete to end of line to system clipboard' })
 map({'n','v','x'}, '<leader>p', '"+p', { desc = 'Paste from system clipboard' })
+map({'n','v','x'}, '<leader>P', '"+P', { desc = 'Paste before cursor from system clipboard' })
 
 -- Navigation niceties
 map({'n','v','x'}, '<C-d>', '<C-d>zz', { desc = 'Page down centered' })
@@ -168,21 +171,49 @@ vim.keymap.set('n', "<C-l>",     nvim_tmux_nav.NvimTmuxNavigateRight)
 vim.keymap.set('n', "<C-\\>",    nvim_tmux_nav.NvimTmuxNavigateLastActive)
 vim.keymap.set('n', "<C-Space>", nvim_tmux_nav.NvimTmuxNavigateNext)
 
---========================================================
--- Telescope Setup
---========================================================
-local telescope = require('telescope')
+local telescope = require("telescope")
+local actions = require("telescope.actions")
+local fb_actions = require("telescope").extensions.file_browser.actions
 local builtin = require('telescope.builtin')
+
 telescope.setup({
     defaults = {
         layout_config = { prompt_position = "top" },
         sorting_strategy = "ascending",
-        winblend = 8,
         mappings = {
-            i = { ["<esc>"] = require('telescope.actions').close },
+            i = {
+                ["<C-c>"] = actions.close,   -- close explicitly
+            },
+            n = {
+                ["<esc>"] = actions.close,   -- close from normal
+            },
+        },
+    },
+    extensions = {
+        file_browser = {
+            mappings = {
+                n = {
+                    ["H"] = fb_actions.toggle_hidden,
+                },
+            },
         },
     },
 })
+-- --========================================================
+-- -- Telescope Setup
+-- --========================================================
+-- local telescope = require('telescope')
+-- local builtin = require('telescope.builtin')
+-- telescope.setup({
+--     defaults = {
+--         layout_config = { prompt_position = "top" },
+--         sorting_strategy = "ascending",
+--         winblend = 8,
+--         mappings = {
+--             i = { ["<esc>"] = require('telescope.actions').close },
+--         },
+--     },
+-- })
 
 map('n', '<leader>ff', builtin.find_files, { desc = 'Find files' })
 map('n', '<leader>fg', builtin.live_grep, { desc = 'Live grep' })
